@@ -50,7 +50,7 @@ const isOneRed = compose(equals(1), countRed, values);
 
 const squareIsNotWhite = compose(isNotWhite, getSquare);
 const trueIfExist = (x) => Boolean(x);
-const findGreaterThenThree = compose(trueIfExist, greaterThenThree)
+const findGreaterThenThree = compose(trueIfExist, count(greaterThenThree));
 
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
 export const validateFieldN1 = allPass([isRedStar, isGreenSquare, isWhiteCircle, isWhiteTriangle]);
