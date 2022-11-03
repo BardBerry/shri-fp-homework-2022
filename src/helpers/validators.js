@@ -1,20 +1,5 @@
-/**
- * @file Домашка по FP ч. 1
- *
- * Основная задача — написать самому, или найти в FP библиотеках функции anyPass/allPass
- * Эти функции/их аналоги есть и в ramda и в lodash
- *
- * allPass — принимает массив функций-предикатов, и возвращает функцию-предикат, которая
- * вернет true для заданного списка аргументов, если каждый из предоставленных предикатов
- * удовлетворяет этим аргументам (возвращает true)
- *
- * anyPass — то же самое, только удовлетворять значению может единственная функция-предикат из массива.
- *
- * Если какие либо функции написаны руками (без использования библиотек) это не является ошибкой
- */
-
 import { identity } from "lodash";
-import { allPass, anyPass, compose, converge, count, countBy, equals, filter, find, prop, values } from "ramda";
+import { allPass, anyPass, compose, converge, count, countBy, equals, filter, prop, values } from "ramda";
 
 const isWhite = (x) => x === 'white';
 const isRed = (x) => x === 'red';
