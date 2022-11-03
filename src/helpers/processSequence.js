@@ -14,38 +14,59 @@
  * Иногда промисы от API будут приходить в состояние rejected, (прямо как и API в реальной жизни)
  * Ответ будет приходить в поле {result}
  */
- import Api from '../tools/api';
+import { allPass, andThen, compose, curry, ifElse, length, otherwise, prop, tap, test, values } from 'ramda';
+import Api from '../tools/api';
 
- const api = new Api();
+const api = new Api();
 
- /**
-  * Я – пример, удали меня
-  */
- const wait = time => new Promise(resolve => {
-     setTimeout(resolve, time);
- })
+const getResult = prop('result');
 
- const processSequence = ({value, writeLog, handleSuccess, handleError}) => {
-     /**
-      * Я – пример, удали меня
-      */
-     writeLog(value);
+const lessThenTen = (x) => x < 10;
+const moreThenTwo = (x) => x > 2;
+const shorterThenTen = compose(lessThenTen, length);
+const longerThenTwo = compose(moreThenTwo, length);
+const greaterThenZero = (x) => x > 0;
+const isFloat = test(/^[0-9]*\.?[0-9]+$/);
 
-     api.get('https://api.tech/numbers/base', {from: 2, to: 10, number: '01011010101'}).then(({result}) => {
-         writeLog(result);
-     });
+const getFixed = (str) => Number(str).toFixed(0);
+const getPowTwo = (x) => Math.pow(x, 2);
+const reminderFromDivideByThree = (x) => x % 3;
 
-     wait(2500).then(() => {
-         writeLog('SecondLog')
+const isValidate = allPass([longerThenTwo, shorterThenTen, isFloat, greaterThenZero]);
 
-         return wait(1500);
-     }).then(() => {
-         writeLog('ThirdLog');
+const getNumberUrl = api.get('https://api.tech/numbers/base');
+const fetchToBinary = (number) => getNumberUrl({from: 10, to: 2, number});
 
-         return wait(400);
-     }).then(() => {
-         handleSuccess('Done');
-     });
+const animalFetch = (id) => api.get(`https://animals.tech/${id}`)({});
+
+const processSequence = ({value, writeLog, handleError, handleSuccess}) => {
+  const logValue = tap(writeLog);
+  const thenLogValue = andThen(logValue);
+  const showError = () => handleError('ValidationError');
+
+
+  const processContinuation = compose(
+    otherwise(handleError),
+    andThen(handleSuccess),
+    andThen(getResult),
+    andThen(animalFetch),
+    thenLogValue,
+    andThen(reminderFromDivideByThree),
+    thenLogValue,
+    andThen(getPowTwo),
+    thenLogValue,
+    andThen(length),
+    thenLogValue,
+    andThen(getResult),
+    fetchToBinary,
+    logValue,
+    getFixed
+  )
+
+  compose(
+    ifElse(isValidate, processContinuation, showError),
+    logValue
+  )(value);
  }
 
  export default processSequence;
